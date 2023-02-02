@@ -19,6 +19,10 @@ export class EmployeesService {
 
   async create(createEmployeeDto: CreateEmployeeDto) {
     try {
+      if (createEmployeeDto['employee_id']) {
+        delete createEmployeeDto['employee_id'];
+      }
+
       const newEmployee = await this.employeeRepo.save(createEmployeeDto);
 
       return newEmployee;
@@ -45,24 +49,24 @@ export class EmployeesService {
       const employeeQb = this.employeeRepo.createQueryBuilder('e');
 
       if (address) {
-        employeeQb.andWhere({ address: ILike('%:address%') }, { address });
+        employeeQb.andWhere({ address: ILike(`%${address}%`) });
       }
 
       if (email) {
-        employeeQb.andWhere({ email: ILike('%:email%') }, { email });
+        employeeQb.andWhere({ email: ILike(`%${email}%`) });
       }
 
       if (name) {
-        employeeQb.andWhere({ name: ILike('%:name%') }, { name });
+        employeeQb.andWhere({ name: ILike(`%${name}%`) });
       }
 
-      if (base_salary_start) {
+      if (base_salary_start != null) {
         employeeQb.andWhere('base_salary >= :base_salary_start', {
           base_salary_start,
         });
       }
 
-      if (base_salary_end) {
+      if (base_salary_end != null) {
         employeeQb.andWhere('base_salary <= :base_salary_end', {
           base_salary_end,
         });
@@ -143,7 +147,7 @@ export class EmployeesService {
         employee.name = name;
       }
 
-      return this.employeeRepo.save(employee);
+      return this.employeeRepo.save(employee, { reload: true });
     } catch (error) {
       throw error;
     }
