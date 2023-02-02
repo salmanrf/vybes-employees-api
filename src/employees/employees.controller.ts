@@ -8,13 +8,19 @@ import {
   Delete,
   Query,
   Put,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { FindEmployeeDto } from './dto/find-employee.dto';
+import { JwtAuthorizationGuard } from 'src/common/guards/jwt.guard';
+import { Request } from 'express';
+import { LoggedInRequest } from 'src/users/dto/user-payload.dto';
 
 @Controller('api/employees')
+@UseGuards(JwtAuthorizationGuard)
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
@@ -83,7 +89,7 @@ export class EmployeesController {
   @Delete(':employee_id')
   async remove(@Param('employee_id') employee_id: string) {
     try {
-      const res = await this.employeesService.findOne(employee_id);
+      const res = await this.employeesService.delete(employee_id);
 
       return {
         status: true,

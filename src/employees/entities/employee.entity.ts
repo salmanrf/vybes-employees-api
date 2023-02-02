@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -28,4 +29,7 @@ export class Employee {
 
   @UpdateDateColumn()
   updated_at: Date | string;
+
+  @DeleteDateColumn()
+  deleted_at: Date | string;
 }
