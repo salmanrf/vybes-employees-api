@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   GetPaginatedData,
@@ -27,6 +31,9 @@ export class EmployeesService {
 
       return newEmployee;
     } catch (error) {
+      if (error.message.includes('duplicate key')) {
+        error.message = 'Duplicate email';
+      }
       throw error;
     }
   }
@@ -147,8 +154,12 @@ export class EmployeesService {
         employee.name = name;
       }
 
-      return this.employeeRepo.save(employee, { reload: true });
+      return await this.employeeRepo.save(employee, { reload: true });
     } catch (error) {
+      if (error.message.includes('duplicate key')) {
+        throw new BadRequestException('Duplicate email.');
+      }
+
       throw error;
     }
   }
